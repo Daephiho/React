@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+</head>
+<body>
+    <div id="root">
+    </div>
+</body>
+<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const root = document.querySelector("#root");
+
+    function Btn({text, big, changeValue}) { 
+        console.log(text)
+        return <button 
+        onClick={changeValue}
+        style={{
+            backgroundColor: "tomato",
+            color: "#fff",
+            padding: "10px 20px",
+            margin: "5px",
+            border: 0,
+            borderRadius: 10,
+            fontSize: big ? 18 : 15,    // big이라는 props의 값이 true면 폰트 사이즈 18, false면 15
+        }}>{text}</button>
+    }
+    // 하나의 버튼 컴포넌트이지만 UI는 다르다. text라는 props를 생성하고 각자 다른 텍스트를 넣어줌. Btn함수 실행 시 각각 다른 텍스트가 들어감.
+    // props는 부모 컴포넌트가 자식 컴포넌트에 값을 전달할 때 사용하는 것이다. 
+    // props는 읽기 전용 요소이다. 
+
+    const MemorizedBtn = React.memo(Btn)    
+    // React.memo() : 부모 컴포넌트에 변화가 생기면 모든 컴포넌트들이 리렌더링 되는데, 이건 애플리케이션 속도에 영향을 줄 수 있음.
+    //                 리액트 메모는 변화가 있는 컴포넌트만 리렌더링 시켜서 애플리케이션을 더 가볍게 만들어 줌. 
+
+    // propTypes: 받고 있는 prop의 타입이 무엇이어야 하는 지 리액트에게 알려줄 수 있는 패키지. dom방식으로 설치
+    //           이 prop의 타입은 ~여야 한다고 알림. 정해둔 타입이 아닌 값이 들어가면 오류메시지 출력.
+
+    MemorizedBtn.propTypes = {
+        text: PropTypes.string.isRequired,  // .isRequired: 이 prop은 모든 컴포넌트에 반드시 포함되어야 한다는 의미. 
+        changeValue: PropTypes.func,    // isRequired 없으면 이 prop는 있어도 되고 없어도 됨.
+    }
+
+    function App() {   // 부모 컴포넌트 
+        const [value, setValue] = React.useState("Save Changes")
+        const changeValue = () => setValue("Revert Changes")
+        return (
+            <div>
+                <MemorizedBtn text={value} big={true} changeValue={changeValue} />
+                <MemorizedBtn text="Confirm" big={false} />
+            </div>
+        );  
+    }
+    ReactDOM.render(<App/>, root);
+
+</script>
+</html>
